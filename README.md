@@ -7,6 +7,7 @@ Requirements
     opencv-python
     mtcnn
     PyQt5
+    tensorflow
 
 Installation
 
