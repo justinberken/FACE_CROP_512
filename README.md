@@ -16,7 +16,7 @@ Installation
 
 bash
 
-pip install opencv-python mtcnn PyQt5
+pip install opencv-python mtcnn PyQt5 tensorflow
 
 Usage
 
