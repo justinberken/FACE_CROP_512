@@ -1,6 +1,6 @@
 Face Crop 512
 
-Face Crop 512 is a Python script that uses OpenCV, MTCNN and Tensorflow libraries to detect and crop faces from images. The cropped faces are saved as separate 512x512 images with a 1:1 aspect ratio. The script also includes a PyQt5-based graphical user interface (GUI) for easy usage.
+Face Crop 512 is a Python script that uses OpenCV, MTCNN and Tensorflow libraries to detect and crop faces from images. The cropped faces are saved as separate 512x512 images with a 1:1 aspect ratio. The script also includes a PyQt5-based graphical user interface for easy usage.
 Requirements
 
     Python 3.6 or higher
