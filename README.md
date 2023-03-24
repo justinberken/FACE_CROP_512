@@ -1,18 +1,15 @@
-Face Crop 512
+Face Crop 512 v0.4
 
-Face Crop 512 is a Python script that uses OpenCV, MTCNN and Tensorflow libraries to detect and crop faces from images. The cropped faces are saved as separate 512x512 images with a 1:1 aspect ratio. The script also includes a PyQt5-based graphical user interface for easy usage.
+Face Crop 512 is a Python script that uses the MTCNN face detector to detect and crop faces from images while maintaining a 1:1 aspect ratio. The cropped faces are resized to 512x512 pixels. The script also provides a simple PyQt5-based graphical user interface (GUI) to select input and output directories and set the padding value.
 Requirements
 
-    Python 3.6 or higher
-    opencv-python
-    mtcnn
+    Python 3.6 or newer
+    OpenCV
+    MTCNN
     PyQt5
-    tensorflow
+    tensorflow 
 
-Installation
-
-    Ensure you have Python 3.6 or higher installed.
-    Install the required libraries using pip:
+To install the required packages, run:
 
 bash
 
@@ -20,25 +17,19 @@ pip install opencv-python mtcnn PyQt5 tensorflow
 
 Usage
 
-    Run the face_crop_512.py script:
+    Run the script with python face_crop_512.py.
+    In the GUI, click "Browse..." to select an input directory containing the images you want to process.
+    Click "Browse..." to select an output directory where the cropped face images will be saved.
+    Set the "Padding" value using the spin box. The padding is specified as a percentage of the smallest image dimension. A value of 0% results in the original bounding box, while 100% extends to the full extent of the smallest dimension of the photograph.
+    Click "Crop Faces" to start the processing. The script will process each image in the input directory, detect the face with the largest bounding box, crop it with the specified padding, and save the result in the output directory.
 
-bash
+Notes
 
-python face_crop_512.py
-
-    The GUI window will open. Click the "Browse..." button next to "Input Directory" and select the directory containing the images you want to process.
-    Set the "Padding" value as desired. This value will determine the additional padding around the detected face bounding box.
-    Click the "Browse..." button next to "Output Directory" and select the directory where you want to save the cropped face images.
-    Click the "Crop Faces" button to start processing the images. The cropped faces will be saved in the output directory.
-
-How It Works
-
-    The script uses the MTCNN library to detect faces in the input images.
-    It then crops the faces, maintaining a 1:1 aspect ratio, and adds padding around the face bounding box as specified by the user.
-    The cropped faces are resized to 512x512 pixels and saved as separate JPEG images in the output directory.
+    The script is designed to work with various image formats, including JPEG, PNG, and BMP.
+    It will only crop the face with the largest original bounding box in each image.
+    The output images will always have a 1:1 aspect ratio and will be resized to 512x512 pixels.
+    If the padding value is too high, it may cause the bounding box to extend beyond the image boundaries. The script will automatically ensure that the bounding box stays within the image boundaries.
 
 License
 
 This project is released under the MIT License.
-
-Save this content as README.md in the same directory as your script. The README file provides an overview of the project, installation instructions, and a description of how the script works.

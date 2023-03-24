@@ -15,40 +15,41 @@ def crop_and_save_faces(image_path, detector, padding, output_dir):
     image = cv2.imread(image_path)
     height, width, _ = image.shape
     faces = detector.detect_faces(image)
-    for i, face in enumerate(faces):
-        x, y, w, h = face['box']
-        x -= padding
-        y -= padding
-        w += padding * 2
-        h += padding * 2
 
-        # Adjust width and height to maintain a 1:1 aspect ratio
-        if w > h:
-            diff = w - h
-            y -= diff // 2
-            h = w
-        else:
-            diff = h - w
-            x -= diff // 2
-            w = h
+    if faces:
+        # Find the face with the largest original bounding box
+        largest_face = max(faces, key=lambda face: face['box'][2] * face['box'][3])
+        x, y, w, h = largest_face['box']
+
+        # Calculate the padding based on the percentage and the smallest image dimension
+        padding_pixels = int(min(width, height) * padding / 100)
+
+        # Calculate the new width and height to maintain a 1:1 aspect ratio
+        square_size = max(w + padding_pixels * 2, h + padding_pixels * 2)
+
+        # Adjust the x and y coordinates to center the face in the square bounding box
+        x = x + w // 2 - square_size // 2
+        y = y + h // 2 - square_size // 2
 
         # Ensure the face bounding box stays within the image boundaries
         x = max(0, x)
         y = max(0, y)
-        w = min(w, width - x)
-        h = min(h, height - y)
+        square_size = min(square_size, width - x, height - y)
 
-        cropped_face = image[y:y+h, x:x+w]
+        cropped_face = image[y:y+square_size, x:x+square_size]
         resized_face = cv2.resize(cropped_face, (512, 512))
 
-        output_path = os.path.join(output_dir, f"{os.path.splitext(os.path.basename(image_path))[0]}_face_{i}.jpeg")
+        output_path = os.path.join(output_dir, f"{os.path.splitext(os.path.basename(image_path))[0]}_face.jpeg")
         cv2.imwrite(output_path, resized_face)
 
-
+        faces = detector.detect_faces(image)
+        print(f"Faces detected in {image_path}: {faces}")
+        
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.init_ui()
+        self.detector = MTCNN()
         
     def init_ui(self):
         label_input_dir = QLabel("Input Directory:")
@@ -56,7 +57,7 @@ class MainWindow(QWidget):
         button_input_dir = QPushButton("Browse...")
         button_input_dir.clicked.connect(self.browse_input_dir)
         
-        label_padding = QLabel("Padding:")
+        label_padding = QLabel("Padding Percentage: (0% = Face boundary, 100% = Image extents)")
         self.spin_padding = QSpinBox()
         self.spin_padding.setMinimum(0)
         self.spin_padding.setMaximum(100)
@@ -95,7 +96,7 @@ class MainWindow(QWidget):
         main_layout.addWidget(button_start)
         
         self.setLayout(main_layout)
-        self.setWindowTitle("Face Crop 512")
+        self.setWindowTitle("Face Crop 512 v0.4")
         self.setGeometry(100, 100, 500, 500)
     
     def browse_input_dir(self):
@@ -110,17 +111,16 @@ class MainWindow(QWidget):
         input_dir = self.edit_input_dir.text()
         padding = self.spin_padding.value()
         output_dir = self.edit_output_dir.text()
-        
+
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-            
-        detector = MTCNN()
+
         image_paths = get_images(input_dir)
-        
+
         for image_path in image_paths:
-            crop_and_save_faces(image_path, detector, padding, output_dir)
+            crop_and_save_faces(image_path, self.detector, padding, output_dir)
             self.log_text.append(f"Cropped faces in {image_path}")
-        
+
         self.log_text.append("Faces cropped and saved successfully.")
 
 def main():
